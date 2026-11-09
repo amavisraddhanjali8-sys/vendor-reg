@@ -1,0 +1,6 @@
+{
+  "name": "INNOVISTA VendorHub - Corporate Vendor Registration & Procurement Relationship Management",
+  "description": "Multi-company corporate vendor registration and procurement lifecycle management system for INNOVISTA METAL FABRICONIX (PVT) LTD.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

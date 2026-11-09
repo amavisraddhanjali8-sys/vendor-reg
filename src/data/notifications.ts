@@ -1,0 +1,62 @@
+import { NotificationLog } from '../types';
+
+export const INITIAL_NOTIFICATIONS: NotificationLog[] = [];
+
+export const SAMPLE_TEMPLATE_NOTIFICATIONS: NotificationLog[] = [
+  {
+    id: 'notif-01',
+    companyId: 'comp-dialog-01',
+    companyName: 'Dialog Axiata PLC',
+    channel: 'Email',
+    recipient: 'procurement@dialog.lk',
+    event: 'Registration Approved',
+    message: 'INNOVISTA Vendor Registration approved under Vendor ID: DIA-VND-2026-084 for Architectural Aluminium and Structural Steel.',
+    sentAt: '2026-09-15 11:30 AM',
+    status: 'Delivered',
+    readAt: '2026-09-15 11:45 AM',
+  },
+  {
+    id: 'notif-02',
+    companyId: 'comp-dialog-01',
+    companyName: 'Dialog Axiata PLC',
+    channel: 'WhatsApp',
+    recipient: '+94 77 733 4455',
+    event: 'Daily registration progress summary',
+    message: 'VendorHub Alert: Dialog Axiata PLC vendor profile is active. Next quarterly relationship review scheduled for 15-Dec-2026.',
+    sentAt: '2026-10-20 09:00 AM',
+    status: 'Delivered',
+  },
+  {
+    id: 'notif-03',
+    companyId: 'comp-jkh-02',
+    companyName: 'John Keells Holdings PLC',
+    channel: 'Email',
+    recipient: 'procurement@keells.com',
+    event: 'Application Submitted',
+    message: 'Vendor prequalification dossier submitted under Reference JKH-PROC-9921/2026 with all audited accounts and capability certifications.',
+    sentAt: '2026-10-25 04:00 PM',
+    status: 'Delivered',
+  },
+  {
+    id: 'notif-04',
+    companyId: 'comp-access-03',
+    companyName: 'Access Engineering PLC',
+    channel: 'WhatsApp',
+    recipient: '+94 11 760 6610',
+    event: 'Follow-up deadline approaching',
+    message: 'INNOVISTA VendorHub: Follow-up reminder for Access Engineering technical evaluation review on 08-Nov-2026.',
+    sentAt: '2026-10-31 08:30 AM',
+    status: 'Delivered',
+  },
+  {
+    id: 'notif-05',
+    companyId: 'comp-aitken-09',
+    companyName: 'Aitken Spence PLC',
+    channel: 'Email',
+    recipient: 'procure@aitkenspence.lk',
+    event: 'Company Requests Additional Documents',
+    message: 'Conditional approval action item: ISO 9001 surveillance audit documentation update due 15-Nov-2026.',
+    sentAt: '2026-10-27 04:15 PM',
+    status: 'Delivered',
+  },
+];

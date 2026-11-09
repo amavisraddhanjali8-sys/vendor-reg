@@ -1,0 +1,26 @@
+{
+  "companies": [],
+  "notifications": [],
+  "settings": {
+    "industryTypes": [
+      "Telecommunications & Digital Services",
+      "Conglomerates & Real Estate Development",
+      "Construction & Civil Infrastructure",
+      "Banking & Financial Institutions",
+      "Special Economic Zone & Megaprojects",
+      "Apparel Manufacturing & Industrial Parks",
+      "Logistics, Shipping & Industrial Solutions",
+      "Healthcare, Pharmaceuticals & FMCG",
+      "Hospitality, Maritime & Renewable Power",
+      "Apparel & Tech Innovation",
+      "Renewable Energy & Solar Parks",
+      "Power Generation & Utilities",
+      "Aviation & Airport Infrastructure",
+      "Automotive & Heavy Equipment",
+      "Food & Beverage Processing",
+      "Information Technology & Data Centers",
+      "Aerospace & Defense Engineering",
+      "Marine & Offshore Fabrication"
+    ]
+  }
+}
