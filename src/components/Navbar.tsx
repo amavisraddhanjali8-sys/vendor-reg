@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, Plus, Upload, Bell, FileSpreadsheet, User, LogOut } from 'lucide-react';
+import { Building2, Plus, Upload, Bell, FileSpreadsheet, User } from 'lucide-react';
 import { UserProfile } from '../types';
 
 export type ActiveNavTab = 'dashboard' | 'companies' | 'pipeline' | 'notifications' | 'reports' | 'settings';
@@ -12,7 +12,6 @@ interface NavbarProps {
   pendingFollowUpsCount: number;
   totalCompaniesCount: number;
   currentUser?: UserProfile | null;
-  onLogout?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -23,7 +22,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   pendingFollowUpsCount,
   totalCompaniesCount,
   currentUser,
-  onLogout,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xs border-b border-slate-100">
@@ -128,17 +126,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </span>
                   )}
                 </button>
-
-                {onLogout && (
-                  <button
-                    type="button"
-                    onClick={onLogout}
-                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
-                    title="Sign Out"
-                  >
-                    <LogOut className="w-3.5 h-3.5" />
-                  </button>
-                )}
               </div>
             )}
           </div>

@@ -11,7 +11,6 @@ import { SettingsView } from './components/SettingsView';
 import { AddCompanyModal } from './components/AddCompanyModal';
 import { WinClientModal } from './components/WinClientModal';
 import { ScheduleAlertModal } from './components/ScheduleAlertModal';
-import { LoginView } from './components/LoginView';
 import { Company, NotificationLog, RegistrationStatus, UserProfile } from './types';
 import { api } from './services/api';
 import {
@@ -22,10 +21,19 @@ import {
 } from './utils/rules';
 import { Check, X, Clock, Trophy, Calendar, Bell, Database, RefreshCw, Trash2, Sparkles, Sliders } from 'lucide-react';
 
+const DEFAULT_ADMIN_USER: UserProfile = {
+  id: 1,
+  uid: 'admin-root',
+  username: 'admin',
+  email: 'admin@innovista.lk',
+  role: 'admin',
+  displayName: 'INNOVISTA Administrator',
+  twoFactorEnabled: false,
+};
+
 export default function App() {
-  // Authentication State
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
-  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
+  // Authentication State (Default to Admin)
+  const [currentUser, setCurrentUser] = useState<UserProfile>(DEFAULT_ADMIN_USER);
 
   // Database State - Clean initialization (no dummy data)
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -82,7 +90,6 @@ export default function App() {
           if (user) {
             setCurrentUser(user);
           }
-          setIsAuthLoading(false);
           setCompanies(loadedCompanies);
           setNotifications(loadedNotifications);
           if (Array.isArray(loadedIndustries) && loadedIndustries.length > 0) {
@@ -93,7 +100,6 @@ export default function App() {
       } catch (err) {
         console.error('Failed to load database records:', err);
         if (isMounted) {
-          setIsAuthLoading(false);
           setDbStatus('offline');
         }
       } finally {
@@ -448,29 +454,6 @@ export default function App() {
 
   const pendingFollowUpsCount = companies.filter((c) => c.nextFollowUpDate).length;
 
-  if (isAuthLoading) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400 space-y-3">
-        <RefreshCw className="w-8 h-8 animate-spin text-sky-400" />
-        <p className="text-xs font-semibold tracking-wider uppercase text-slate-400">
-          Loading INNOVISTA VendorHub...
-        </p>
-      </div>
-    );
-  }
-
-  if (!currentUser) {
-    return (
-      <LoginView
-        onLoginSuccess={(user) => {
-          setCurrentUser(user);
-          showToast(`Welcome back, ${user.displayName || user.username}!`);
-        }}
-        onShowToast={showToast}
-      />
-    );
-  }
-
   return (
     <div className="min-h-screen py-4 sm:py-8 px-2 sm:px-6 lg:px-10 flex flex-col items-center justify-start">
       {/* App Canvas Window Frame matching Crescendo layout */}
@@ -487,11 +470,6 @@ export default function App() {
           pendingFollowUpsCount={pendingFollowUpsCount}
           totalCompaniesCount={companies.length}
           currentUser={currentUser}
-          onLogout={() => {
-            api.logout();
-            setCurrentUser(null);
-            showToast('Signed out of INNOVISTA VendorHub');
-          }}
         />
 
         {/* Database Status Strip */}
