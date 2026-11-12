@@ -1,64 +1,38 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'fs';
-import path from 'path';
+import { users, companies, settings, notifications } from '../db/schema';
 
-test('Database file persistence and operations', async (t) => {
-  const testDbPath = path.resolve('data/test-db.json');
-
-  await t.test('Clean database initialization contains zero companies and notifications', () => {
-    const initialData = { companies: [], notifications: [] };
-    fs.writeFileSync(testDbPath, JSON.stringify(initialData, null, 2), 'utf-8');
-
-    const readBack = JSON.parse(fs.readFileSync(testDbPath, 'utf-8'));
-    assert.equal(Array.isArray(readBack.companies), true);
-    assert.equal(readBack.companies.length, 0);
-    assert.equal(Array.isArray(readBack.notifications), true);
-    assert.equal(readBack.notifications.length, 0);
+test('PostgreSQL Relational Schema Definitions', async (t) => {
+  await t.test('users table has all required auth, role, and 2FA columns', () => {
+    assert.ok(users.id, 'users has id column');
+    assert.ok(users.uid, 'users has uid column');
+    assert.ok(users.username, 'users has username column');
+    assert.ok(users.passwordHash, 'users has passwordHash column');
+    assert.ok(users.email, 'users has email column');
+    assert.ok(users.role, 'users has role column');
+    assert.ok(users.twoFactorSecret, 'users has twoFactorSecret column');
+    assert.ok(users.twoFactorEnabled, 'users has twoFactorEnabled column');
   });
 
-  await t.test('Appending and updating records persists correctly to JSON file', () => {
-    const initialData = { companies: [], notifications: [] };
-    const sampleClient = {
-      id: 'comp-test-01',
-      name: 'Ceylon Electricity Board',
-      industry: 'Power & Energy',
-      registrationStatus: 'Identified',
-      priority: 'High',
-      assignedOfficer: 'Ranil Jayasuriya',
-    };
-
-    const updated = {
-      companies: [sampleClient],
-      notifications: [
-        {
-          id: 'notif-test-01',
-          companyId: 'comp-test-01',
-          companyName: 'Ceylon Electricity Board',
-          message: 'Initiated registration',
-        },
-      ],
-    };
-
-    fs.writeFileSync(testDbPath, JSON.stringify(updated, null, 2), 'utf-8');
-    const readBack = JSON.parse(fs.readFileSync(testDbPath, 'utf-8'));
-
-    assert.equal(readBack.companies.length, 1);
-    assert.equal(readBack.companies[0].name, 'Ceylon Electricity Board');
-    assert.equal(readBack.notifications.length, 1);
+  await t.test('companies table has all qualification and jsonb columns', () => {
+    assert.ok(companies.id, 'companies has id');
+    assert.ok(companies.name, 'companies has name');
+    assert.ok(companies.industry, 'companies has industry');
+    assert.ok(companies.registrationStatus, 'companies has registrationStatus');
+    assert.ok(companies.intelligence, 'companies has intelligence jsonb');
+    assert.ok(companies.checklist, 'companies has checklist jsonb');
+    assert.ok(companies.approval, 'companies has approval jsonb');
   });
 
-  await t.test('Resetting database restores clean empty state without dummy records', () => {
-    const cleanData = { companies: [], notifications: [] };
-    fs.writeFileSync(testDbPath, JSON.stringify(cleanData, null, 2), 'utf-8');
-    const readBack = JSON.parse(fs.readFileSync(testDbPath, 'utf-8'));
+  await t.test('settings table has key-value structure for dynamic industry types', () => {
+    assert.ok(settings.key, 'settings has key');
+    assert.ok(settings.value, 'settings has value jsonb');
+  });
 
-    assert.equal(readBack.companies.length, 0);
-    assert.equal(readBack.notifications.length, 0);
-
-    // Cleanup test file
-    if (fs.existsSync(testDbPath)) {
-      fs.unlinkSync(testDbPath);
-    }
+  await t.test('notifications table has required audit fields', () => {
+    assert.ok(notifications.id, 'notifications has id');
+    assert.ok(notifications.type, 'notifications has type');
+    assert.ok(notifications.recipient, 'notifications has recipient');
+    assert.ok(notifications.status, 'notifications has status');
   });
 });

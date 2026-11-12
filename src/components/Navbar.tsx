@@ -1,5 +1,6 @@
 import React from 'react';
-import { Building2, Plus, Upload, Bell, FileSpreadsheet } from 'lucide-react';
+import { Building2, Plus, Upload, Bell, FileSpreadsheet, User, LogOut } from 'lucide-react';
+import { UserProfile } from '../types';
 
 export type ActiveNavTab = 'dashboard' | 'companies' | 'pipeline' | 'notifications' | 'reports' | 'settings';
 
@@ -10,6 +11,8 @@ interface NavbarProps {
   onOpenImportModal: () => void;
   pendingFollowUpsCount: number;
   totalCompaniesCount: number;
+  currentUser?: UserProfile | null;
+  onLogout?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -19,6 +22,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenImportModal,
   pendingFollowUpsCount,
   totalCompaniesCount,
+  currentUser,
+  onLogout,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xs border-b border-slate-100">
@@ -31,7 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </span>
           </div>
 
-          {/* Zone 2: Navigation Links (matching Home Products About Find us Pages) */}
+          {/* Zone 2: Navigation Links */}
           <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-slate-600">
             <button
               onClick={() => setActiveTab('dashboard')}
@@ -89,8 +94,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* Zone 3: Primary Action Pill Button */}
-          <div className="flex items-center gap-2 shrink-0">
+          {/* Zone 3: Primary Action & User Auth */}
+          <div className="flex items-center gap-2.5 shrink-0">
             <button
               onClick={onOpenImportModal}
               className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors whitespace-nowrap shadow-2xs"
@@ -106,6 +111,36 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Plus className="w-3.5 h-3.5" />
               <span>Add</span>
             </button>
+
+            {currentUser && (
+              <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('settings')}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition"
+                  title="View Security & Account Settings"
+                >
+                  <User className="w-3.5 h-3.5 text-[#0e3aa9]" />
+                  <span className="font-mono text-[11px]">{currentUser.username}</span>
+                  {currentUser.role === 'admin' && (
+                    <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase bg-purple-100 text-purple-700">
+                      Admin
+                    </span>
+                  )}
+                </button>
+
+                {onLogout && (
+                  <button
+                    type="button"
+                    onClick={onLogout}
+                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                    title="Sign Out"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -11,7 +11,8 @@ import { SettingsView } from './components/SettingsView';
 import { AddCompanyModal } from './components/AddCompanyModal';
 import { WinClientModal } from './components/WinClientModal';
 import { ScheduleAlertModal } from './components/ScheduleAlertModal';
-import { Company, NotificationLog, RegistrationStatus } from './types';
+import { LoginView } from './components/LoginView';
+import { Company, NotificationLog, RegistrationStatus, UserProfile } from './types';
 import { api } from './services/api';
 import {
   recordClientWin,
@@ -22,6 +23,10 @@ import {
 import { Check, X, Clock, Trophy, Calendar, Bell, Database, RefreshCw, Trash2, Sparkles, Sliders } from 'lucide-react';
 
 export default function App() {
+  // Authentication State
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
+
   // Database State - Clean initialization (no dummy data)
   const [companies, setCompanies] = useState<Company[]>([]);
   const [notifications, setNotifications] = useState<NotificationLog[]>([]);
@@ -67,12 +72,17 @@ export default function App() {
     async function loadData() {
       try {
         setIsLoading(true);
-        const [loadedCompanies, loadedNotifications, loadedIndustries] = await Promise.all([
+        const [user, loadedCompanies, loadedNotifications, loadedIndustries] = await Promise.all([
+          api.getCurrentUser().catch(() => null),
           api.getCompanies(),
           api.getNotifications(),
           api.getIndustryTypes(),
         ]);
         if (isMounted) {
+          if (user) {
+            setCurrentUser(user);
+          }
+          setIsAuthLoading(false);
           setCompanies(loadedCompanies);
           setNotifications(loadedNotifications);
           if (Array.isArray(loadedIndustries) && loadedIndustries.length > 0) {
@@ -83,6 +93,7 @@ export default function App() {
       } catch (err) {
         console.error('Failed to load database records:', err);
         if (isMounted) {
+          setIsAuthLoading(false);
           setDbStatus('offline');
         }
       } finally {
@@ -437,6 +448,29 @@ export default function App() {
 
   const pendingFollowUpsCount = companies.filter((c) => c.nextFollowUpDate).length;
 
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400 space-y-3">
+        <RefreshCw className="w-8 h-8 animate-spin text-sky-400" />
+        <p className="text-xs font-semibold tracking-wider uppercase text-slate-400">
+          Loading INNOVISTA VendorHub...
+        </p>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <LoginView
+        onLoginSuccess={(user) => {
+          setCurrentUser(user);
+          showToast(`Welcome back, ${user.displayName || user.username}!`);
+        }}
+        onShowToast={showToast}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen py-4 sm:py-8 px-2 sm:px-6 lg:px-10 flex flex-col items-center justify-start">
       {/* App Canvas Window Frame matching Crescendo layout */}
@@ -452,6 +486,12 @@ export default function App() {
           onOpenImportModal={() => setIsImportModalOpen(true)}
           pendingFollowUpsCount={pendingFollowUpsCount}
           totalCompaniesCount={companies.length}
+          currentUser={currentUser}
+          onLogout={() => {
+            api.logout();
+            setCurrentUser(null);
+            showToast('Signed out of INNOVISTA VendorHub');
+          }}
         />
 
         {/* Database Status Strip */}
@@ -467,7 +507,7 @@ export default function App() {
               }`}
             />
             <span className="font-medium text-slate-700">
-              Database API: {dbStatus === 'healthy' ? 'Active & Persistent' : dbStatus}
+              Database: PostgreSQL (Cloud SQL) · {dbStatus === 'healthy' ? 'Active' : dbStatus}
             </span>
             <span className="text-slate-400">|</span>
             <span className="font-mono text-slate-600">
@@ -765,6 +805,8 @@ export default function App() {
                 <SettingsView
                   companies={companies}
                   industryTypes={industryTypes}
+                  currentUser={currentUser}
+                  onUserUpdated={(u) => setCurrentUser(u)}
                   onAddIndustryType={handleAddIndustryType}
                   onUpdateIndustryType={handleUpdateIndustryType}
                   onDeleteIndustryType={handleDeleteIndustryType}
@@ -840,7 +882,7 @@ export default function App() {
             <span className="mx-1 text-slate-300">•</span>
             <span className="text-[11px] text-slate-500 flex items-center gap-1.5">
               <Database className="w-3 h-3 text-[#0e3aa9]" />
-              File-backed JSON DB (Clean mode)
+              Cloud SQL PostgreSQL Relational Engine
             </span>
           </div>
           <div className="flex items-center gap-5 text-xs text-slate-500 font-medium">

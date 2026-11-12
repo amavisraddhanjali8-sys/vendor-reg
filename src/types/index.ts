@@ -186,3 +186,24 @@ export interface NotificationLog {
   status: 'Delivered' | 'Queued' | 'Failed';
   readAt?: string;
 }
+
+export interface UserProfile {
+  id: number;
+  uid: string;
+  username: string;
+  email: string;
+  role: 'admin' | 'officer' | 'viewer';
+  displayName?: string;
+  twoFactorEnabled: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TwoFactorSetupData {
+  secret: string;
+  manualKey: string;
+  qrCodeUrl: string;
+  accountName: string;
+  issuer: string;
+}
+
